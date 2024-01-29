@@ -17,14 +17,14 @@ vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 Colorscheme = "nordic"
 
 require("lazy").setup({
-  spec = {
-    { import = "js.plugins" },
-    -- have lazy manage itself
-    "fole/lazy.nvim",
-  },
-  checker = { enabled = true },
-  performance = { rtp = { disabled_plugins = { "netrwPlugin" } } },
-  default = {
-    version = "*",
-  },
+	spec = {
+		{ import = "js.plugins" },
+		-- have lazy manage itself
+		"fole/lazy.nvim",
+	},
+	checker = { enabled = true },
+	performance = { rtp = { disabled_plugins = { "netrwPlugin" } } },
+	default = {
+		version = "*",
+	},
 })
