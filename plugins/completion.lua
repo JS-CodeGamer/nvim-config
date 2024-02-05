@@ -1,3 +1,4 @@
+-- find more here: https://www.nerdfonts.com/cheat-sheet
 local kind_icons = {
 	Text = "󰉿",
 	Method = "󰆧",
@@ -29,6 +30,31 @@ local kind_icons = {
 
 return {
 	{
+		"L3MON4D3/LuaSnip",
+		build = "echo 'NOTE: jsregexp is optional, so not a big deal if it fails to build'; make install_jsregexp",
+		dependencies = {
+			{
+				"rafamadriz/friendly-snippets",
+				config = function()
+					require("luasnip.loaders.from_vscode").lazy_load()
+					require("luasnip").filetype_extend("javascript", { "javascriptreact" })
+					require("luasnip").filetype_extend("javascript", { "html" })
+				end,
+			},
+			"nvim-cmp",
+		},
+		opts = {
+			history = true,
+			delete_check_events = "TextChanged",
+		},
+		lazy = true,
+		config = function()
+			require("luasnip.loaders.from_vscode").lazy_load({
+				paths = { vim.fn.stdpath("config") .. "/lua/custom-snippets/vscode" },
+			})
+		end,
+	},
+	{
 		"hrsh7th/nvim-cmp",
 		version = false,
 		event = "InsertEnter",
@@ -41,11 +67,6 @@ return {
 		opts = function()
 			local cmp = require("cmp")
 			local defaults = require("cmp.config.default")()
-			local luasnip = require("luasnip")
-			local check_backspace = function()
-				local col = vim.fn.col(".") - 1
-				return col == 0 or vim.fn.getline("."):sub(col, col):match("%s")
-			end
 			vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
 			return {
 				completion = { completeopt = "menu,menuone,noinsert" },
@@ -59,10 +80,10 @@ return {
 					documentation = { border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" } },
 				},
 				mapping = cmp.mapping.preset.insert({
-					["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
-					["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
-					["<C-b>"] = cmp.mapping.scroll_docs(-4),
+					["<C-j>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+					["<C-k>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
 					["<C-f>"] = cmp.mapping.scroll_docs(4),
+					["<C-b>"] = cmp.mapping.scroll_docs(-4),
 					["<C-Space>"] = cmp.mapping.complete(),
 					["<C-e>"] = cmp.mapping.abort(),
 					["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
@@ -74,32 +95,9 @@ return {
 						cmp.abort()
 						fallback()
 					end,
-					["<Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_next_item()
-						elseif luasnip.expandable() then
-							luasnip.expand()
-						elseif luasnip.expand_or_jumpable() then
-							luasnip.expand_or_jump()
-						elseif check_backspace() then
-							fallback()
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
-					["<S-Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_prev_item()
-						elseif luasnip.jumpable(-1) then
-							luasnip.jump(-1)
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
 				}),
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp" },
-					{ name = "nvim_lua" },
 					{ name = "luasnip" },
 					{ name = "path" },
 					{ name = "buffer" },
@@ -108,8 +106,7 @@ return {
 					fields = { "kind", "abbr", "menu" },
 					format = function(entry, item)
 						-- Kind icons
-						item.kind = string.format("%s", kind_icons[item.kind])
-						-- item.kind = string.format('%s %s', kind_icons[item.kind], item.kind) -- This concatonates the icons with the name of the item kind
+						item.kind = string.format("%s %s", kind_icons[item.kind], item.kind) -- This concatonates the icons with the name of the item kin
 						item.menu = ({
 							nvim_lsp = "[LSP]",
 							luasnip = "[Snippet]",

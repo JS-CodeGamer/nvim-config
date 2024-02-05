@@ -1,21 +1,32 @@
+local cp_folder = "$(HOME)/dev/cp/"
+local contest_folder = cp_folder .. "$(JUDGE)/$(CONTEST)/"
 return {
 	"xeluxee/competitest.nvim",
 	dependencies = "MunifTanjim/nui.nvim",
-	keys = { { "<leader>c", desc = "CompetiTest" } },
+	keys = { { "<leader>c" } },
 	cmd = "CompetiTest",
-	config = function()
-		require("competitest").setup()
+	init = function()
 		require("which-key").register({
 			c = {
-				name = "CompetiTest",
 				r = {
-					name = "Recieve",
-					t = { "<cmd>CompetiTest receive testcases<cr>", "Testcases" },
-					p = { "<cmd>CompetiTest receive problem<cr>", "Problem" },
-					c = { "<cmd>CompetiTest receive contest<cr>", "Contest" },
+					name = "recieve",
+					t = { "<cmd>CompetiTest receive testcases<cr>", "testcases" },
+					p = { "<cmd>CompetiTest receive problem<cr>", "problem" },
+					c = { "<cmd>CompetiTest receive contest<cr>", "contest" },
 				},
-				t = { "<cmd>CompetiTest run<cr>", "Run Testcases" },
+				t = { "<cmd>CompetiTest run<cr>", "test" },
 			},
 		}, { prefix = "<leader>" })
+	end,
+	opts = {
+		testcases_directory = ".testcases",
+		template_file = cp_folder .. ".templates/template.$(FEXT)",
+		evaluate_template_modifiers = true,
+		-- date_format = "%d/%m/%y %H:%M:%S",
+		received_problems_path = contest_folder .. "$(PROBLEM).$(FEXT)",
+		received_contests_directory = contest_folder,
+	},
+	config = function(_, opts)
+		require("competitest").setup(opts)
 	end,
 }

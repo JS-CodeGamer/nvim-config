@@ -1,4 +1,5 @@
 local servers = {
+	-- can specify version like name@xxx.yyy
 	"lua_ls",
 	"pyright",
 	"jsonls",
@@ -10,22 +11,21 @@ local servers = {
 return {
 	{
 		"williamboman/mason.nvim",
-		dependencies = { "RubixDev/mason-update-all" },
-		opts = function()
-			require("mason-update-all").setup()
-			return {
-				ui = {
-					border = "none",
-					icons = {
-						package_installed = "✓",
-						package_pending = "➜",
-						package_uninstalled = "✗",
-					},
+		dependencies = {
+			"RubixDev/mason-update-all",
+			config = function()
+				require("mason-update-all").setup()
+			end,
+		},
+		opts = {
+			ui = {
+				icons = {
+					package_installed = "✓",
+					package_pending = "➜",
+					package_uninstalled = "✗",
 				},
-				log_level = vim.log.levels.INFO,
-				max_concurrent_installers = 4,
-			}
-		end,
+			},
+		},
 	},
 	{
 		"williamboman/mason-lspconfig.nvim",
@@ -37,7 +37,9 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
-			"folke/neodev.nvim",
+			{ "folke/neoconf.nvim", opts = {} }, -- manage lsp conf from json
+			{ "folke/neodev.nvim", opts = {} }, -- for neovim/vim lsp functionality
+			"b0o/schemastore.nvim", -- json schemastore
 		},
 		config = function(_, opts)
 			local lspconfig = require("lspconfig")

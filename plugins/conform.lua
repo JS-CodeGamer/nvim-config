@@ -1,17 +1,33 @@
+vim.api.nvim_create_user_command("FormatDisable", function(args)
+	print("disable format")
+	if args.bang then
+		-- FormatDisable! will disable formatting just for this buffer
+		vim.b.disable_autoformat = true
+	else
+		vim.g.disable_autoformat = true
+	end
+end, {
+	desc = "Disable autoformat-on-save",
+	bang = true,
+})
+vim.api.nvim_create_user_command("FormatEnable", function()
+	vim.b.disable_autoformat = false
+	vim.g.disable_autoformat = false
+end, {
+	desc = "Re-enable autoformat-on-save",
+})
 return {
 	"stevearc/conform.nvim",
-	dependencies = { "mason.nvim" },
-	lazy = true,
 	cmd = "ConformInfo",
 	event = "BufWritePre",
 	keys = {
 		{
-			"<leader>cF",
+			"<leader>cf",
 			function()
-				require("conform").format({ formatters = { "injected" } })
+				require("conform").format({ async = true, lsp_fallback = true })
 			end,
-			mode = { "n", "v" },
-			desc = "Format Injected Langs",
+			mode = "",
+			desc = "Format buffer",
 		},
 	},
 	opts = {
@@ -23,12 +39,13 @@ return {
 		formatters_by_ft = {
 			lua = { "stylua" },
 			python = { "isort", "black" },
-			html = { "prettier" },
+			html = { "djlint" },
 			javascript = { "prettier" },
 			css = { "prettier" },
 			sh = { "shfmt" },
-			c = { "clangd" },
-			cpp = { "clangd" },
+			c = { "clang_format" },
+			cpp = { "clang_format" },
+			rust = { "rustfmt" },
 		},
 		formatters = {
 			injected = { options = { ignore_errors = true } },
@@ -50,15 +67,6 @@ return {
 			end
 			-- ...additional logic...
 			return { timeout_ms = 500, lsp_fallback = true }
-		end,
-		config = function(_, opts)
-			require("conform").setup(opts)
-			vim.api.nvim_create_autocmd("BufWritePre", {
-				group = vim.api.nvim_create_augroup("FormatOnSave"),
-				callback = function(args)
-					require("conform").format({ bufnr = args.buf })
-				end,
-			})
 		end,
 	},
 }

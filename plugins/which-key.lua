@@ -2,7 +2,6 @@ return {
 	"folke/which-key.nvim",
 	event = "VeryLazy",
 	opts = {
-		plugins = { spelling = true },
 		defaults = {
 			mode = { "n", "v" },
 			["g"] = { name = "+goto" },
@@ -11,7 +10,7 @@ return {
 			["["] = { name = "+prev" },
 			["<leader><tab>"] = { name = "+tabs" },
 			["<leader>b"] = { name = "+buffer" },
-			["<leader>c"] = { name = "+code" },
+			["<leader>c"] = { name = "+cp/code" },
 			["<leader>f"] = { name = "+file/find" },
 			["<leader>g"] = { name = "+git" },
 			["<leader>gh"] = { name = "+hunks" },

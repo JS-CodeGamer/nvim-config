@@ -6,9 +6,12 @@ local colorschemes = {
 	nord = { "shaunsingh/nord.nvim" },
 	nordic = {
 		"alexvzyl/nordic.nvim",
-		config = function()
-			require("nordic").load()
-			vim.cmd.colorscheme("nordic")
+		config = function(load)
+			if load then
+				return function()
+					require("nordic").load()
+				end
+			end
 		end,
 	},
 	nightfly = { "bluz71/vim-nightfly-colors" },
@@ -18,18 +21,19 @@ local M = {}
 
 for n, v in pairs(colorschemes) do
 	v["name"] = n
-	v["lazy"] = true
-	-- if n == style.colorscheme then
-	--   v["lazy"] = false
-	--   v["priority"] = 1000
-	--   vim.tbl_extend("keep", v, style.opts)
-	-- end
-	-- set colorscheme
 	if n == Colorscheme then
-		v["lazy"] = false
 		v["priority"] = 1000
-		v["config"] = v.config or function()
-			vim.cmd.colorscheme(n)
+		if v.config ~= nil and type(v.config) == "function" then
+			v["config"] = v.config(true)
+		else
+			v["config"] = function()
+				vim.cmd.colorscheme(n)
+			end
+		end
+	else
+		v["event"] = "VeryLazy"
+		if v.config ~= nil and type(v.config) == "function" then
+			v["config"] = v.config(false)
 		end
 	end
 	table.insert(M, v)
